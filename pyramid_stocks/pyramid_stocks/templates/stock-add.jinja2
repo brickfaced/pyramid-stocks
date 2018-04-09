@@ -1,0 +1,18 @@
+{% extends "base.jinja2" %}
+
+{% block content %}
+<form action="{{request.route_url('stock')}}" method="GET">
+  <input type="text" name="symbol" placeholder="MSFT">
+  <button type="submit">search</button>
+</form>
+
+{% if company %}
+<div>
+  <h1>Result</h1>
+  <h2>{{company.companyName}}</h2>
+  <form action="{{request.route_url('stock')}}" method="POST">
+    <button type="submit">search</button>
+  </form>
+</div>
+{% endif %}
+{% endblock content %}
