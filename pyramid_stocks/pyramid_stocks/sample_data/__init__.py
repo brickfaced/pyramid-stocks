@@ -12,7 +12,7 @@ MOCK_ENTRIES = [
     },
     {
         "symbol": "VA",
-        "companyName": "valve",
+        "companyName": "Valve",
         "exchange": "Baller Exchange",
         "industry": "Makin' Money",
         "website": "valvesoftware.com",

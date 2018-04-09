@@ -6,7 +6,7 @@
   {% for entry in portfolio %}
   <li>
     <h3>{{entry.companyName}}</h3>
-    <p><a href="{{request.route_url('portfolio', id=entry.symbol)}}">view more</a></p>
+    <p><a href="{{request.route_url('details', symbol=entry.symbol)}}">view more</a></p>
   </li>
   {% endfor %}
 </ul>
