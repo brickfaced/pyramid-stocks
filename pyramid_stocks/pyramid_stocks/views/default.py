@@ -35,12 +35,12 @@ def get_auth_view(request):
 
 
 @view_config(route_name='portfolio', renderer='../templates/portfolio.jinja2')
-def get_portfolio(request):
+def get_portfolio_view(request):
     return {'portfolio': MOCK_ENTRIES}
 
 
 @view_config(route_name='details', renderer='../templates/details.jinja2')
-def my_detail_view(request):
+def get_detail_view(request):
     symbol = request.matchdict['symbol']
     for entry in MOCK_ENTRIES:
         if entry['symbol'] == symbol:
@@ -50,7 +50,7 @@ def my_detail_view(request):
 
 
 @view_config(route_name='stock', renderer='../templates/stock-add.jinja2')
-def my_stock_view(request):
+def get_stock_view(request):
     if request.method == 'GET':
         try:
             symbol = request.GET['symbol']
