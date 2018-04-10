@@ -42,5 +42,7 @@ def main(argv=sys.argv):
     with transaction.manager:
         dbsession = get_tm_session(session_factory, transaction.manager)
 
-        model = MyModel(name='one', value=1)
-        dbsession.add(model)
+        from ..sample_data import MOCK_ENTRIES
+        for entry in MOCK_ENTRIES:
+            model = Stock(**entry)
+            dbsession.add(model)
