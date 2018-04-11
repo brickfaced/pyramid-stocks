@@ -2,7 +2,7 @@
 
 {% block content %}
 <form action="{{request.route_url('stock')}}" method="GET">
-  <input type="text" name="symbol" placeholder="MSFT">
+  <input type="text" name="symbol" placeholder="Enter a company's symbol">
   <button type="submit">search</button>
 </form>
 
@@ -11,7 +11,16 @@
   <h1>Result</h1>
   <h2>{{company.companyName}}</h2>
   <form action="{{request.route_url('stock')}}" method="POST">
-    <button type="submit">search</button>
+    <input type="hidden" name="symbol" value="{{company.symbol}}">
+    <input type="hidden" name="companyName" value="{{company.companyName}}">
+    <input type="hidden" name="exchange" value="{{company.exchange}}">
+    <input type="hidden" name="industry" value="{{company.industry}}">
+    <input type="hidden" name="website" value="{{company.website}}">
+    <input type="hidden" name="description" value="{{company.description}}">
+    <input type="hidden" name="CEO" value="{{company.CEO}}">
+    <input type="hidden" name="issueType" value="{{company.issueType}}">
+    <input type="hidden" name="sector" value="{{company.sector}}">    
+    <button type="submit" name="submit">Add to your Portfolio</button>
   </form>
 </div>
 {% endif %}
