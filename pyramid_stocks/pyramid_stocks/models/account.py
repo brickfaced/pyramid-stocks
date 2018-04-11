@@ -1,10 +1,14 @@
+from .meta import Base
+from datetime import datetime as dt
+from sqlalchemy.exc import DBAPIError
+from cryptacular import bcrypt
 from sqlalchemy import (
     Column,
     Integer,
     String,
+    DateTime,
+    Boolean,
 )
-
-from .meta import Base
 
 
 class Account(Base):
@@ -13,3 +17,30 @@ class Account(Base):
     username = Column(String)
     email = Column(String)
     password = Column(String)
+    registered_on = Column(DateTime)
+    admin = Column(Boolean)
+
+    def __init__(self, username, email, password, admin=False):
+        self.username = username
+        self.email = email
+        self.password = manager.encode(password, 10)
+        self.registered_on = dt.now()
+        self.admin = admin
+
+
+@classmethod
+def check_credentials(cls, request=None, username=None, password=None):
+    if request.dbsession is None:
+        raise DBAPIError
+
+    is_authenticated = False
+
+    query = request.dbsesion.query(cls).filter(
+        cls.username == username).one_or_none()
+
+    if query is not None:
+        if manager.check(query.password, password):
+            is_authenticated = True
+            return (is_authenticated, username)
+
+        return (is_authenticated, username)  # At this point is authenticated is false because the manager.check did not evaluate to true
