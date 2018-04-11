@@ -78,16 +78,13 @@ def get_stock_view(request):
         data = response.json()
         return {'company': data}
 
-    else:
-        raise HTTPNotFound()
-
     if request.method == 'POST':
         fields = ['symbol']
 
         if not all([field in request.POST for field in fields]):
             return HTTPBadRequest()
 
-        stock = {
+        instance = {
             'symbol': request.POST['symbol'],
             'companyName': request.POST['companyName'],
             'exchange': request.POST['exchange'],
@@ -98,11 +95,10 @@ def get_stock_view(request):
             'issueType': request.POST['issueType'],
             'sector': request.POST['sector']
         }
-        stock = Stock(**stock)
+        instance = Stock(**instance)
 
         try:
-            request.dbsession.add(stock)
-            request.dbsession.flush()
+            request.dbsession.add(instance)
         except DBAPIError:
             return Response(DB_ERR_MSG, content_type='text/plain', status=500)
 
