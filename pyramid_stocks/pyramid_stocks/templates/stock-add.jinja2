@@ -11,6 +11,7 @@
   <h1>Result</h1>
   <h2>{{company.companyName}}</h2>
   <form action="{{request.route_url('stock')}}" method="POST">
+    <input type="hidden" name="csrf_token" value="{{request.session.get_csrf_token()}}">
     <input type="hidden" name="symbol" value="{{company.symbol}}">
     <input type="hidden" name="companyName" value="{{company.companyName}}">
     <input type="hidden" name="exchange" value="{{company.exchange}}">

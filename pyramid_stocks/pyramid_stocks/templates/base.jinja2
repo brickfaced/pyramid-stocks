@@ -11,10 +11,14 @@
   <header>
     <nav>
       <ul>
-        <li><a href={{request.route_url('home')}}>Home</a></li>
-        <li><a href={{request.route_url('auth')}}>Sign in</a></li>
-        <li><a href={{request.route_url('portfolio')}}>Portfolio</a></li>
+        <li><a href="{{request.route_url('home')}}">Home</a></li>
+        {% if request.authenticated_userid %}
+        <li><a href="{{request.route_url('portfolio')}}">Portfolio</a></li>
         <li><a href="{{request.route_url('stock')}}">Add Stocks</a></li>
+        <li><a href="{{request.route_url('logout')}}">Sign out</a></li>
+        {% else %}
+        <li><a href="{{request.route_url('auth')}}">Sign in</a></li>
+        {% endif %}
       </ul>
     </nav>
   </header>
