@@ -10,7 +10,7 @@ from .meta import Base
 class Stock(Base):
     __tablename__ = 'stocks'
     id = Column(Integer, primary_key=True)
-    symbol = Column(String)
+    symbol = Column(String, nullable=False, unique=True)
     companyName = Column(String)
     exchange = Column(String)
     industry = Column(String)

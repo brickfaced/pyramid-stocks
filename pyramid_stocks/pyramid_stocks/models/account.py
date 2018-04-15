@@ -11,6 +11,9 @@ from sqlalchemy import (
 )
 
 
+manager = bcrypt.BCRYPTPasswordManager()
+
+
 class Account(Base):
     __tablename__ = 'accounts'
     id = Column(Integer, primary_key=True)
@@ -27,20 +30,18 @@ class Account(Base):
         self.registered_on = dt.now()
         self.admin = admin
 
+    @classmethod
+    def check_credentials(cls, request=None, username=None, password=None):
+        if request.dbsession is None:
+            raise DBAPIError
 
-@classmethod
-def check_credentials(cls, request=None, username=None, password=None):
-    if request.dbsession is None:
-        raise DBAPIError
+        is_authenticated = False
 
-    is_authenticated = False
+        query = request.dbsession.query(cls).filter(
+            cls.username == username).one_or_none()
 
-    query = request.dbsesion.query(cls).filter(
-        cls.username == username).one_or_none()
+        if query is not None:
+            if manager.check(query.password, password):
+                is_authenticated = True
 
-    if query is not None:
-        if manager.check(query.password, password):
-            is_authenticated = True
-            return (is_authenticated, username)
-
-        return (is_authenticated, username)  # At this point is authenticated is false because the manager.check did not evaluate to true
+        return (is_authenticated, username)

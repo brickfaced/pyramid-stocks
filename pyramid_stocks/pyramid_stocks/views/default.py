@@ -6,35 +6,18 @@ from sqlalchemy.exc import DBAPIError
 from ..models import Stock
 import requests
 from pyramid.response import Response
+from pyramid.security import NO_PERMISSION_REQUIRED
 
 
 API_URL = 'https://api.iextrading.com/1.0'
 
 
-@view_config(route_name='home', renderer='../templates/base.jinja2')
+@view_config(
+    route_name='home',
+    renderer='../templates/base.jinja2',
+    permission=NO_PERMISSION_REQUIRED)
 def get_home_view(request):
     return {}
-
-
-@view_config(route_name='auth', renderer='../templates/auth.jinja2')
-def get_auth_view(request):
-    if request.method == 'GET':
-        try:
-            username = request.GET['username']
-            password = request.GET['password']
-            print('User: {}, Pass: {}'.format(username, password))
-            return HTTPFound(location=request.route_url('portfolio'))
-
-        except KeyError:
-            return {}
-
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        print('User: {}, Pass: {}'.format(username, password))
-        return HTTPFound(location=request.route_url('portfolio'))
-
-    return HTTPNotFound()
 
 
 @view_config(route_name='portfolio', renderer='../templates/portfolio.jinja2')
@@ -48,11 +31,11 @@ def get_portfolio_view(request):
     return {'portfolio': all_stocks}
 
 
-@view_config(route_name='details', renderer='../templates/details.jinja2')
+@view_config(route_name='details', renderer='../templates/details.jinja2',)
 def get_detail_view(request):
     try:
         stock_symbol = request.matchdict['symbol']
-    except IndexError:
+    except KeyError:
         return HTTPNotFound()
 
     try:
@@ -68,21 +51,11 @@ def get_detail_view(request):
 
 @view_config(route_name='stock', renderer='../templates/stock-add.jinja2')
 def get_stock_view(request):
-    if request.method == 'GET':
-        try:
-            symbol = request.GET['symbol']
-        except KeyError:
-            return {}
-
-        response = requests.get(API_URL + '/stock/{}/company'.format(symbol))
-        data = response.json()
-        return {'company': data}
-
     if request.method == 'POST':
         fields = ['symbol']
 
         if not all([field in request.POST for field in fields]):
-            return HTTPBadRequest()
+            raise HTTPBadRequest
 
         instance = {
             'symbol': request.POST['symbol'],
@@ -103,3 +76,13 @@ def get_stock_view(request):
             return Response(DB_ERR_MSG, content_type='text/plain', status=500)
 
         return HTTPFound(location=request.route_url('portfolio'))
+
+    if request.method == 'GET':
+        try:
+            symbol = request.GET['symbol']
+        except KeyError:
+            return {}
+
+        response = requests.get(API_URL + '/stock/{}/company'.format(symbol))
+        data = response.json()
+        return {'company': data}
