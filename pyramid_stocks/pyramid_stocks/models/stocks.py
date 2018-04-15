@@ -4,12 +4,16 @@ from sqlalchemy import (
     String,
 )
 
+from sqlalchemy.orm import relationship
 from .meta import Base
+from .association import association_table
 
 
 class Stock(Base):
     __tablename__ = 'stocks'
     id = Column(Integer, primary_key=True)
+    account_id = relationship(
+        "Account", secondary=association_table, back_populates="stock_id")
     symbol = Column(String, nullable=False, unique=True)
     companyName = Column(String)
     exchange = Column(String)

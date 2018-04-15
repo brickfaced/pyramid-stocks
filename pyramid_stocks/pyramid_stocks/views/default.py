@@ -4,6 +4,7 @@ from pyramid.httpexceptions import HTTPFound, HTTPNotFound, HTTPBadRequest
 from . import DB_ERR_MSG
 from sqlalchemy.exc import DBAPIError
 from ..models import Stock
+from ..models import Account
 import requests
 from pyramid.response import Response
 from pyramid.security import NO_PERMISSION_REQUIRED
@@ -23,12 +24,14 @@ def get_home_view(request):
 @view_config(route_name='portfolio', renderer='../templates/portfolio.jinja2')
 def get_portfolio_view(request):
     try:
-        query = request.dbsession.query(Stock)
-        all_stocks = query.all()
+        query = request.dbsession.query(Account)
+        user_stocks = query.filter(Account.username == request.authenticated_userid).first()
     except DBAPIError:
         return DBAPIError(DB_ERR_MSG, content_type='text/plain', status=500)
-
-    return {'portfolio': all_stocks}
+    if user_stocks:
+        return {'portfolio': user_stocks.stock_id}
+    else:
+        return HTTPNotFound()
 
 
 @view_config(route_name='details', renderer='../templates/details.jinja2',)
@@ -57,25 +60,36 @@ def get_stock_view(request):
         if not all([field in request.POST for field in fields]):
             raise HTTPBadRequest
 
-        instance = {
-            'symbol': request.POST['symbol'],
-            'companyName': request.POST['companyName'],
-            'exchange': request.POST['exchange'],
-            'industry': request.POST['industry'],
-            'website': request.POST['website'],
-            'description': request.POST['description'],
-            'CEO': request.POST['CEO'],
-            'issueType': request.POST['issueType'],
-            'sector': request.POST['sector']
-        }
-        instance = Stock(**instance)
+        query = request.dbsession.query(Account)
+        instance = query.filter(Account.username == request.authenticated_userid).first()
 
-        try:
-            request.dbsession.add(instance)
-        except DBAPIError:
-            return Response(DB_ERR_MSG, content_type='text/plain', status=500)
+        query = request.dbsession.query(Stock)
+        instance2 = query.filter(Stock.symbol == request.POST['symbol']).first()
 
-        return HTTPFound(location=request.route_url('portfolio'))
+        if instance2:
+            instance2.account_id.append(instance)
+        else:
+            new = Stock()
+            new.account_id.append(instance)
+            new.symbol = request.POST['symbol']
+            new.companyName = request.POST['companyName']
+            new.exchange = request.POST['exchange']
+            new.industry = request.POST['industry']
+            new.website = request.POST['website']
+            new.description = request.POST['description']
+            new.CEO = request.POST['CEO']
+            new.issueType = request.POST['issueType']
+            new.sector = request.POST['sector']
+
+            try:
+                request.dbsession.add(new)
+                request.dbsession.flush()
+            except DBAPIError:
+                return Response(DB_ERR_MSG, content_type='text/plain', status=500)
+
+            return HTTPFound(location=request.route_url('portfolio'))
+
+        return HTTPNotFound()
 
     if request.method == 'GET':
         try:

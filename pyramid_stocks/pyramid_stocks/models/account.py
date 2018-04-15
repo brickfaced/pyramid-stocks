@@ -10,6 +10,8 @@ from sqlalchemy import (
     Boolean,
 )
 
+from sqlalchemy.orm import relationship
+from .association import association_table
 
 manager = bcrypt.BCRYPTPasswordManager()
 
@@ -17,9 +19,12 @@ manager = bcrypt.BCRYPTPasswordManager()
 class Account(Base):
     __tablename__ = 'accounts'
     id = Column(Integer, primary_key=True)
-    username = Column(String)
-    email = Column(String)
-    password = Column(String)
+    stock_id = relationship(
+        "Stock", secondary=association_table, back_populates="account_id"
+    )
+    username = Column(String, nullable=False, unique=True)
+    email = Column(String, nullable=False, unique=True)
+    password = Column(String, nullable=False)
     registered_on = Column(DateTime)
     admin = Column(Boolean)
 

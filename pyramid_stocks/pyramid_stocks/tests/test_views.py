@@ -1,3 +1,6 @@
+from pyramid.httpexceptions import HTTPNotFound, HTTPFound, HTTPBadRequest, HTTPUnauthorized
+
+
 def test_default_behavior_of_home_view(dummy_request):
     from ..views.default import get_home_view
 
@@ -14,12 +17,30 @@ def test_default_behavior_of_auth_view(dummy_request):
     assert response == {}
 
 
+def test_auth_unauthorized_view(dummy_request):
+    from ..views.auth import get_auth_view
+
+    dummy_request.GET = {'username': 'stonefaced', 'password': 'password'}
+    response = get_auth_view(dummy_request)
+    assert response.status_code == 401
+    assert isinstance(response, HTTPUnauthorized)
+
+
+def test_auth_bad_signup_view(dummy_request):
+    from ..views.auth import get_auth_view
+
+    dummy_request.method = 'POST'
+    dummy_request.POST = {'username': 'Noob', 'password': 'password'}
+    response = get_auth_view(dummy_request)
+    assert response.status_code == 400
+    assert isinstance(response, HTTPBadRequest)
+
+
 def test_behavior_of_portfolio_view(dummy_request):
     from ..views.default import get_portfolio_view
 
     response = get_portfolio_view(dummy_request)
-    assert isinstance(response, dict)
-    assert response['portfolio'] == []
+    assert isinstance(response, HTTPNotFound)
 
 
 def test_behavior_of_detail_view(dummy_request, db_session, test_stock):
@@ -49,9 +70,10 @@ def test_behavior_add_stock(dummy_request):
     assert type(response) == dict
 
 
-def test_behavior_post_add_stock(dummy_request):
+def test_behavior_post_add_stock(dummy_request, db_session, test_account):
     from ..views.default import get_stock_view
-    from pyramid.httpexceptions import HTTPFound
+
+    db_session.add(test_account)
 
     dummy_request.method = 'POST'
     dummy_request.POST = {
@@ -71,9 +93,11 @@ def test_behavior_post_add_stock(dummy_request):
     assert isinstance(response, HTTPFound)
 
 
-def test_add_stock_adds_to_db(dummy_request, db_session):
+def test_add_stock_adds_to_db(dummy_request, db_session, test_account):
     from ..views.default import get_stock_view
     from ..models import Stock
+
+    db_session.add(test_account)
 
     dummy_request.method = 'POST'
     dummy_request.POST = {
@@ -99,7 +123,6 @@ def test_add_stock_adds_to_db(dummy_request, db_session):
 def test_invalid_post_to_db(dummy_request):
     import pytest
     from ..views.default import get_stock_view
-    from pyramid.httpexceptions import HTTPBadRequest
 
     dummy_request.method = 'POST'
     dummy_request.POST = {}
