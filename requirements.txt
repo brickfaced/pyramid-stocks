@@ -32,6 +32,7 @@ pluggy==0.6.0
 poyo==0.4.1
 prompt-toolkit==1.0.15
 psycopg2==2.7.4
+psycopg2-binary==2.7.4
 ptyprocess==0.5.2
 py==1.5.3
 Pygments==2.2.0
@@ -40,6 +41,7 @@ pyramid-debugtoolbar==4.4
 pyramid-jinja2==2.7
 pyramid-mako==1.0.2
 pyramid-retry==0.5
+-e git+https://github.com/brickfaced/pyramid-stocks.git@55ec9ae6f2f861bd3d1107aabae7255fc48ab320#egg=pyramid_stocks&subdirectory=pyramid_stocks
 pyramid-tm==2.2
 pyramids==0.0.1
 pyramids-categories==1.0.0
