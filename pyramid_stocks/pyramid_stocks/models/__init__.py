@@ -7,6 +7,7 @@ import zope.sqlalchemy
 # Base.metadata prior to any initialization routines
 from .stocks import Stock  # flake8: noqa
 from .account import Account
+from .association import association_table
 
 # run configure_mappers after defining all of the models to ensure
 # all relationships can be setup

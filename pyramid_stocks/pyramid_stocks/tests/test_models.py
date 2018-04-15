@@ -37,3 +37,5 @@ def test_entry_to_stocks_with_no_symbol_throws_error(db_session):
         db_session.add(stock)
 
         assert db_session.query(Stock).one_or_none() is None
+
+

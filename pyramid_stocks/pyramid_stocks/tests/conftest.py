@@ -1,7 +1,7 @@
 import pytest
 from pyramid import testing
 from ..models.meta import Base
-from ..models import Stock
+from ..models import Stock, Account
 
 
 @pytest.fixture
@@ -20,12 +20,24 @@ def test_stock():
 
 
 @pytest.fixture
+def test_account():
+    return Account(
+        username='brickfaced', email='brickfazed@hotmail.com', password='password'
+    )
+
+
+@pytest.fixture
 def configuration(request):
     config = testing.setUp(settings={
         'sqlalchemy.url': 'postgres://postgres:password@localhost:5432/pyramid_stocks_test'
     })
     config.include('pyramid_stocks.models')
     config.include('pyramid_stocks.routes')
+
+    config.testing_securitypolicy(
+        userid="brickfaced",
+        permissive=True,
+    )
 
     def teardown():
         testing.tearDown()
