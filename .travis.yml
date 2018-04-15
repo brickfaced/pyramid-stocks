@@ -14,7 +14,8 @@ env:
 
 # command to install dependencies
 install:
-  - pip install -e ".[testing]"
+  - cd pyramid_stocks
+  - pip install -e .[testing]
 
 # commands to run tests
 script:
