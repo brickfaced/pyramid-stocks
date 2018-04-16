@@ -1,0 +1,5 @@
+#!/bin/bash
+set -e
+cd pyramid_stocks
+python setup.py develop
+python runapp.py

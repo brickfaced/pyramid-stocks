@@ -8,4 +8,4 @@ omit =
     pyramid_stocks/pyramid_stocks/scripts/*
     pyramid_stocks/pyramid_stocks/sample_data/__init__.py
     pyramid_stocks/setup.py
-    /pyramid_stocks/pyramid_stocks/security.py
+    pyramid_stocks/pyramid_stocks/security.py
