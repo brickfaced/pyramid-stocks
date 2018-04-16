@@ -6,7 +6,7 @@ def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
 
-    if os.envron.get('DATABASE_URL', ''):
+    if os.environ.get('DATABASE_URL', ''):
         settings['sqlalchemy.url'] = os.environ['DATABASE_URL']
 
     config = Configurator(settings=settings)
