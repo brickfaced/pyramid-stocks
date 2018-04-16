@@ -89,8 +89,6 @@ def get_stock_view(request):
 
         return HTTPFound(location=request.route_url('portfolio'))
 
-    return HTTPNotFound()
-
     if request.method == 'GET':
         try:
             symbol = request.GET['symbol']
