@@ -87,7 +87,7 @@ def get_stock_view(request):
             except DBAPIError:
                 return Response(DB_ERR_MSG, content_type='text/plain', status=500)
 
-            return HTTPFound(location=request.route_url('portfolio'))
+        return HTTPFound(location=request.route_url('portfolio'))
 
     if request.method == 'GET':
         try:
